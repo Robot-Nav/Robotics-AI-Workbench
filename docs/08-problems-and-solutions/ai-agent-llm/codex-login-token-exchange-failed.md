@@ -1,9 +1,6 @@
 # PS-0001 · Codex 登录失败：token_exchange_failed
 
-> 本页面由仓库根目录的原始问题记录同步而来，方便网站导航和全文搜索。根目录原始文件保持不变。  
-> [打开 GitHub 根目录原始记录](https://github.com/Robot-Nav/Robotics-AI-Workbench/blob/main/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95%20%7C%20Codex%20%E7%99%BB%E5%BD%95%E5%A4%B1%E8%B4%A5%20token_exchange_failed.md)
-
-## 原始记录
+> 本页面是该问题的唯一维护版本，原始记录内容已完整迁移至此，后续请直接在本页面更新。
 
 在 Linux 上使用 Codex CLI、VS Code 的 Codex 插件或 Codex 客户端时，有时会在浏览器完成 ChatGPT 登录后出现以下错误：
 
