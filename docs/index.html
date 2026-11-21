@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robotics AI Workbench</title>
+  <meta name="description" content="Robot-Nav 的机器人、Physical AI、Agent Engineering 与 AI 驱动研发知识库。">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <link rel="stylesheet" href="assets/custom.css">
+</head>
+<body>
+  <div id="app">正在加载 Robotics AI Workbench...</div>
+  <script>
+    const GITHUB_REPO = 'Robot-Nav/Robotics-AI-Workbench';
+    window.$docsify = {
+      name: 'Robotics AI Workbench',
+      repo: 'https://github.com/' + GITHUB_REPO,
+      homepage: 'README.md',
+      loadSidebar: true,
+      loadNavbar: true,
+      subMaxLevel: 3,
+      auto2top: true,
+      relativePath: true,
+      notFoundPage: '404.md',
+      search: {
+        paths: 'auto',
+        placeholder: '搜索算法、技术、问题与解决方案...',
+        noData: '没有找到相关内容',
+        depth: 6
+      },
+      pagination: {
+        previousText: '上一篇',
+        nextText: '下一篇',
+        crossChapter: true,
+        crossChapterText: true
+      },
+      copyCode: {
+        buttonText: '复制',
+        errorText: '复制失败',
+        successText: '已复制'
+      },
+      plugins: [
+        function (hook, vm) {
+          hook.afterEach(function (html) {
+            const file = String(vm.route.file || 'README.md').replace(/^\/+/, '');
+            const encoded = file.split('/').map(encodeURIComponent).join('/');
+            const url = 'https://github.com/' + GITHUB_REPO + '/edit/main/docs/' + encoded;
+            return html +
+              '<hr><div class="page-edit">' +
+              '<a href="' + url + '" target="_blank" rel="noopener noreferrer">✏️ 在 GitHub 上编辑此页</a>' +
+              '<span>发现错误或有新的想法？可以直接修改 Markdown。</span>' +
+              '</div>';
+          });
+          hook.doneEach(function () {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+              window.MathJax.typesetPromise();
+            }
+          });
+        }
+      ]
+    };
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2/dist/docsify-pagination.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>
