@@ -62,3 +62,13 @@
   - [技术笔记模板](templates/technical-note.md)
   - [问题记录模板](templates/problem.md)
   - [实验报告模板](templates/experiment.md)
+
+  - [Robot-Nav 项目算法分析](07-projects/robot-nav-repositories/README.md)
+    - **导航与规划**
+      - [legbot_3D_Nav](07-projects/robot-nav-repositories/navigation/legbot-3d-nav.md)
+    - **控制与优化**
+      - [SA-MPPI](07-projects/robot-nav-repositories/control/sa-mppi.md)
+      - [legbot-MPC-WBC](07-projects/robot-nav-repositories/control/legbot-mpc-wbc.md)
+    - **强化学习与运动控制**
+      - [legbot_lab](07-projects/robot-nav-repositories/learning/legbot-lab.md)
+      - [GO2_backflip](07-projects/robot-nav-repositories/learning/go2-backflip.md)
