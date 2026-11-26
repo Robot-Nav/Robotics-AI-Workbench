@@ -76,12 +76,12 @@
 
 ## 4. 与基础知识板块的关系
 
-- [路径规划与轨迹优化](../../../04-robotics-core/planning.md)
-- [运动控制与优化控制](../../../04-robotics-core/motion-control.md)
-- [定位与建图](../../../04-robotics-core/localization-mapping.md)
-- [感知与多传感器融合](../../../04-robotics-core/perception.md)
-- [模仿学习与强化学习](../../../03-physical-ai/robot-learning.md)
-- [World Model](../../../03-physical-ai/world-model.md)
+- [路径规划与轨迹优化](../../04-robotics-core/planning.md)
+- [运动控制与优化控制](../../04-robotics-core/motion-control.md)
+- [定位与建图](../../04-robotics-core/localization-mapping.md)
+- [感知与多传感器融合](../../04-robotics-core/perception.md)
+- [模仿学习与强化学习](../../03-physical-ai/robot-learning.md)
+- [World Model](../../03-physical-ai/world-model.md)
 
 本专题保留“项目中如何使用”的上下文；基础知识页面负责可跨项目复用的算法定义、推导和通用比较。后续发现理论页面缺项时，优先补充基础页面，再从项目文档链接过去，避免重复堆砌。
 
