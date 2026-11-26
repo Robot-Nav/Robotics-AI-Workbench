@@ -21,7 +21,7 @@
 | 四足动作技能 | [GO2_backflip](https://github.com/Robot-Nav/GO2_backflip) | [算法分析](learning/go2-backflip.md) | 相位条件化后空翻、非对称 Actor-Critic PPO、安全课程与实机部署层 |
 | 四足优化控制 | [legbot-MPC-WBC](https://github.com/Robot-Nav/legbot-MPC-WBC) | [算法分析](control/legbot-mpc-wbc.md) | 质心凸 MPC 接触力优化 + 摆动腿笛卡尔控制；当前源码并非通用全身 QP-WBC |
 
-<badge color="success">首批 5 个项目已完成源码级分析</badge>
+**首批 5 个项目已完成源码级分析。**
 
 ### 1.2 待分析的机器人算法与系统项目
 
