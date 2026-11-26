@@ -42,7 +42,6 @@
 
 - **07 · 项目实践**
   - [项目总览](07-projects/README.md)
-
 - **08 · 问题与解决方案**
   - [问题知识库首页](08-problems-and-solutions/README.md)
   - [问题索引](08-problems-and-solutions/INDEX.md)
