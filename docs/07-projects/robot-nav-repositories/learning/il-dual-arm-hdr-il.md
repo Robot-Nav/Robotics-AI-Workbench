@@ -19,11 +19,16 @@ README 将双臂末端与目标物体状态组织为 21 维特征，包含左右
 
 单头 GAT 的核心为：
 
-$$z_i=Wh_i,\qquad
-e_{ij}=\operatorname{LeakyReLU}(a^T[z_i\Vert z_j]),$$
+$$
+z_i=Wh_i,\qquad
+e_{ij}=\operatorname{LeakyReLU}(a^T[z_i\Vert z_j]),
+$$
 
-$$\alpha_{ij}=\operatorname{softmax}_j(e_{ij}),\qquad
-h_i'=\sum_{j\in\mathcal N(i)}\alpha_{ij}z_j.$$
+$$
+\alpha_{ij}=\operatorname{softmax}_j(e_{ij}),\qquad
+
+h_i'=\sum_{j\in\mathcal N(i)}\alpha_{ij}z_j.
+$$
 
 多头注意力并行提取不同关系，再拼接或聚合。对双臂任务而言，图结构的意义是允许网络根据当前状态动态调整左右臂、目标物体和清洁表面相关特征的重要性。
 
@@ -31,19 +36,27 @@ h_i'=\sum_{j\in\mathcal N(i)}\alpha_{ij}z_j.$$
 
 每个动作原语对应一个动态 VAE。编码器先用 GAT 提取空间交互特征，再用 GRU 建模轨迹时间依赖，输出潜在分布参数：
 
-$$q_\phi(z|x_{1:T})=\mathcal N(\mu_\phi,\operatorname{diag}(\sigma_\phi^2)).$$
+$$
+q_\phi(z|x_{1:T})=\mathcal N(\mu_\phi,\operatorname{diag}(\sigma_\phi^2)).
+$$
 
 重参数化采样：
 
-$$z=\mu+\sigma\odot\epsilon,\qquad\epsilon\sim\mathcal N(0,I).$$
+$$
+z=\mu+\sigma\odot\epsilon,\qquad\epsilon\sim\mathcal N(0,I).
+$$
 
 解码器使用 GRU 自回归生成未来轨迹：
 
-$$\hat x_t=f_\psi(z,\hat x_{t-1}).$$
+$$
+\hat x_t=f_\psi(z,\hat x_{t-1}).
+$$
 
 训练损失由轨迹重构误差和 KL 正则组成：
 
-$$L_{\rm VAE}=L_{\rm recon}+\beta D_{KL}(q_\phi(z|x)\Vert p(z)).$$
+$$
+L_{\rm VAE}=L_{\rm recon}+\beta D_{KL}(q_\phi(z|x)\Vert p(z)).
+$$
 
 部分模型还融合桌面位姿特征，帮助轨迹生成根据不同表面位置与姿态调整运动。由于是自回归解码，长时域误差可能逐步累积，需要检查完整轨迹而不只看单步重构损失。
 
@@ -51,7 +64,9 @@ $$L_{\rm VAE}=L_{\rm recon}+\beta D_{KL}(q_\phi(z|x)\Vert p(z)).$$
 
 规划模型使用 GAT 编码观测序列，得到全局隐状态，再由 PlanningDecoder 预测动作原语标签。该任务本质上是序列条件分类：
 
-$$L_{\rm plan}=-\sum_c y_c\log\hat y_c.$$
+$$
+L_{\rm plan}=-\sum_c y_c\log\hat y_c.
+$$
 
 TrainPlanningModel.py 使用交叉熵训练规划模型。规划模型输出离散原语序列，动态模型再生成每个原语对应的连续动作轨迹。训练代码中的动态模型构造了六个 GAT 编码器与六个 GRU 解码器；任务脚本中的细分动作阶段数量与模型类别索引不是同一概念，阅读数据标签和原语映射时应保持区分。
 
@@ -59,8 +74,10 @@ TrainPlanningModel.py 使用交叉熵训练规划模型。规划模型输出离�
 
 不同示范轨迹的执行速度和持续时间可能不同，直接逐帧 MSE 会惩罚时间错位。项目使用 smooth-min 近似动态时间规整递推中的 hard min，使时间对齐损失可以参与梯度训练：
 
-$$D(i,j)=d(x_i,y_j)+\operatorname{softmin}_\rho
-\{D(i-1,j),D(i,j-1),D(i-1,j-1)\}.$$
+$$
+D(i,j)=d(x_i,y_j)+\operatorname{softmin}_\rho
+\{D(i-1,j),D(i,j-1),D(i-1,j-1)\}.
+$$
 
 当 $\rho$ 增大时，softmin 趋近 hard minimum。该方法允许轨迹在时间轴上局部伸缩，但并不保证物理接触力或任务语义正确。
 
@@ -88,7 +105,6 @@ $$D(i,j)=d(x_i,y_j)+\operatorname{softmin}_\rho
 - [动态模型训练](https://github.com/Robot-Nav/IL-dual-arm/blob/main/Table_Lift_HDR-IL/TrainDynamicModels.py)
 - [规划模型训练](https://github.com/Robot-Nav/IL-dual-arm/blob/main/Table_Lift_HDR-IL/TrainPlanningModel.py)
 - [PyBullet 任务与动作原语](https://github.com/Robot-Nav/IL-dual-arm/tree/main/Simulation%20Code)
-
 
 ---
 
