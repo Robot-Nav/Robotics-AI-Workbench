@@ -290,7 +290,7 @@
     if (event.target === overlay) closeOverlay();
   });
 
-  if (!crypto || !crypto.subtle) {
+  if (!window.crypto || !window.crypto.subtle) {
     entry.title = "当前浏览器不支持安全密码校验，请使用最新版 Chrome、Edge 或 Safari。";
   }
 
