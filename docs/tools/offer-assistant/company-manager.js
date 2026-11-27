@@ -7,7 +7,7 @@
   }[c]));
   const makeId = () => "offer-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
   const download = (data, filename) => {
-    const blob = new Blob(["\ufeff", JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" });
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -19,8 +19,7 @@
   };
   const getData = (profile) => ({
     profile,
-    checklist: JSON.parse(store.rawGet(profile.id, "offer-assistant-check-v2") || "{}"),
-    transcript: store.rawGet(profile.id, "offer-assistant-transcript-v1") || ""
+    checklist: JSON.parse(store.rawGet(profile.id, "offer-assistant-check-v2") || "{}")
   });
   const snapshot = (profiles) => ({
     format: "robot-nav-offer-assistant-backup",
@@ -113,7 +112,7 @@
     const file = event.target.files && event.target.files[0];
     if (!file) return;
     try {
-      const data = JSON.parse(await file.text());
+      const data = JSON.parse((await file.text()).replace(/^\uFEFF/, ""));
       if (data.format !== "robot-nav-offer-assistant-backup" || !Array.isArray(data.companies)) throw new Error("文件格式不正确");
       if (!confirm("将导入 " + data.companies.length + " 份公司档案。现有档案不会被覆盖，是否继续？")) return;
       const profiles = store.list();
@@ -122,7 +121,6 @@
         const p = Object.assign({}, item.profile, { id: makeId(), name: item.profile.name + "（导入）" });
         profiles.push(p);
         store.rawSet(p.id, "offer-assistant-check-v2", JSON.stringify(item.checklist || {}));
-        store.rawSet(p.id, "offer-assistant-transcript-v1", String(item.transcript || ""));
       });
       store.saveList(profiles);
       alert("导入完成。");

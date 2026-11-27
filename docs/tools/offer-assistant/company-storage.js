@@ -1,7 +1,7 @@
 (() => {
   const META_KEY = "offer-assistant-companies-v1";
   const ACTIVE_KEY = "offer-assistant-active-company-v1";
-  const SCOPED_KEYS = new Set(["offer-assistant-check-v2", "offer-assistant-transcript-v1"]);
+  const SCOPED_KEYS = new Set(["offer-assistant-check-v2"]);
   const storage = window.localStorage;
   const proto = Storage.prototype;
   const nativeGet = proto.getItem;
@@ -28,9 +28,7 @@
     companies = [profile];
     writeRaw(META_KEY, JSON.stringify(companies));
     const oldChecklist = readRaw("offer-assistant-check-v2");
-    const oldTranscript = readRaw("offer-assistant-transcript-v1");
     if (oldChecklist !== null) writeRaw(prefix(id, "offer-assistant-check-v2"), oldChecklist);
-    if (oldTranscript !== null) writeRaw(prefix(id, "offer-assistant-transcript-v1"), oldTranscript);
   }
 
   let activeId = readRaw(ACTIVE_KEY);

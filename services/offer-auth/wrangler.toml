@@ -1,9 +1,0 @@
-name = "robot-nav-offer-recording"
-main = "src/index.js"
-compatibility_date = "2026-11-27"
-workers_dev = true
-
-[vars]
-OWNER_GITHUB_LOGIN = "Robot-Nav"
-OWNER_GITHUB_ID = "186013147"
-SESSION_TTL_SECONDS = "28800"
