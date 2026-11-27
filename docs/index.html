@@ -146,7 +146,7 @@
             if (window.__docsifyMathPending) window.renderDocsifyMath();
           }).catch(function (error) {
             console.error('MathJax startup failed:', error);
-            showLoadError();
+            loadNextSource();
           });
         };
         script.onerror = function () {
