@@ -21,7 +21,7 @@
 
 ## 工具箱
 
-- **[Offer 沟通助手](https://robot-nav.github.io/Robotics-AI-Workbench/tools/offer-assistant/)**：校招 Offer 问题清单、答复备注、录音与实时转写。
+- **[Offer 沟通助手](https://robot-nav.github.io/Robotics-AI-Workbench/tools/offer-assistant/)**：校招 Offer 问题清单、公司档案管理与答复备注。
 
 ## 核心研发闭环
 
