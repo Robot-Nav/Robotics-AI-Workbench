@@ -96,7 +96,7 @@ $$n_{t+1}=n_t+\theta(\mu-n_t)\Delta t+\sigma_t\sqrt{\Delta t}\,\epsilon_t.$$
 
 - [TD3 原论文](https://arxiv.org/abs/1802.09477)
 - [Prioritized Experience Replay](https://arxiv.org/abs/1511.05952)
-- [模仿学习与强化学习基础](../../../../03-physical-ai/robot-learning.md)
+- [模仿学习与强化学习基础](../../../03-physical-ai/robot-learning.md)
 
 
 ---
