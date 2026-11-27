@@ -40,7 +40,7 @@ function response(body, status = 200, extraHeaders = {}) {
   headers.set("Pragma", "no-cache");
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("Referrer-Policy", "no-referrer");
-  headers.set("Permissions-Policy", "camera=(), geolocation=(), payment=()");
+  headers.set("Permissions-Policy", "microphone=(self), camera=(), geolocation=(), payment=()");
   return new Response(body, { status, headers });
 }
 async function importHmacKey(secret) {
