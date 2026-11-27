@@ -20,12 +20,16 @@
 
 全向底盘由多个转向/驱动轮组成。轮端约束可抽象为：
 
-$$A(q)\dot q=B(q)\xi_b,\qquad
-\xi_b=[v_x,v_y,\omega]^T.$$
+$$
+A(q)\dot q=B(q)\xi_b,\qquad
+\xi_b=[v_x,v_y,\omega]^T.
+$$
 
 在底盘局部坐标系求解后，再用旋转矩阵变换到全局坐标系：
 
-$$v^W=R(\theta)v^B.$$
+$$
+v^W=R(\theta)v^B.
+$$
 
 README 中给出轮关节速度与底盘 twist 的映射以及伪逆求解。该映射依赖轮距、轮半径、转向关节角、安装几何和轮子滚动方向；改变 URDF 或轮组配置时必须重新核对运动学矩阵，不能只调整速度比例。
 
@@ -33,16 +37,22 @@ README 中给出轮关节速度与底盘 twist 的映射以及伪逆求解。该
 
 目标末端位姿误差由位置误差和旋转误差组成：
 
-$$e=\begin{bmatrix}p_d-p\\e_R\end{bmatrix},\qquad
-\dot x=J(q)\dot q.$$
+$$
+e=\begin{bmatrix}p_d-p\\e_R\end{bmatrix},\qquad
+\dot x=J(q)\dot q.
+$$
 
 阻尼最小二乘解：
 
-$$\dot q=J^T(JJ^T+\lambda^2I)^{-1}e.$$
+$$
+\dot q=J^T(JJ^T+\lambda^2I)^{-1}e.
+$$
 
 阻尼项 $\lambda$ 在接近奇异位形时限制关节速度放大。代码还加入零空间项：
 
-$$\dot q=J^\#e+(I-J^\#J)\dot q_0.$$
+$$
+\dot q=J^\#e+(I-J^\#J)\dot q_0.
+$$
 
 其中 $\dot q_0$ 可用于回到参考关节位形、远离关节限位或优化次级目标。零空间项在理想模型下不改变主任务末端速度，但数值伪逆、阻尼和限幅会产生残余耦合，必须通过实际 FK 误差验证。
 
@@ -54,7 +64,9 @@ arm_controller 将期望关节状态、当前关节状态和动力学项组合�
 
 关节柔顺控制的一般形式为：
 
-$$\tau=K_p(q_d-q)+K_d(\dot q_d-\dot q)+g(q)+\tau_{ff}.$$
+$$
+\tau=K_p(q_d-q)+K_d(\dot q_d-\dot q)+g(q)+\tau_{ff}.
+$$
 
 这里的公式是控制结构说明，具体实现系数和补偿项以代码为准。命令流中断时控制器会保持当前姿态，不能把“保持姿态”理解为独立的碰撞安全机制。
 
@@ -62,8 +74,10 @@ $$\tau=K_p(q_d-q)+K_d(\dot q_d-\dot q)+g(q)+\tau_{ff}.$$
 
 Diffusion Policy 将动作序列生成视为条件去噪过程。给定观测历史 $o_{t-H_o:t}$，对真实动作序列 $a^0$ 加噪得到 $a^k$，网络预测噪声：
 
-$$L_{\rm denoise}=\mathbb E_{k,a^0,\epsilon}
-\left[\|\epsilon-\epsilon_\theta(a^k,k,o)\|^2\right].$$
+$$
+L_{\rm denoise}=\mathbb E_{k,a^0,\epsilon}
+\left[\|\epsilon-\epsilon_\theta(a^k,k,o)\|^2\right].
+$$
 
 推理时从噪声动作序列逐步去噪，得到一段未来动作，而不是每帧独立输出一个动作。仓库使用 2 步观测历史、8 步动作块；README 中动作向量包含底盘位置/姿态、机械臂目标与夹爪量，示例动作编码为 13 维。
 
@@ -88,7 +102,6 @@ policy_server 配置控制周期 100 ms、推理与通信延迟预算 200 ms。P
 - [底盘控制](https://github.com/Robot-Nav/manipulation_wheel/blob/main/base_controller.py)
 - [机械臂柔顺控制](https://github.com/Robot-Nav/manipulation_wheel/blob/main/arm_controller.py)
 - [Diffusion Policy 推理服务](https://github.com/Robot-Nav/manipulation_wheel/blob/main/policy_server.py)
-
 
 ---
 
