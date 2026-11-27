@@ -42,6 +42,35 @@
 
 - **07 · 项目实践**
   - [项目总览](07-projects/README.md)
+  - [Robot-Nav 项目算法分析总览](07-projects/robot-nav-repositories/README.md)
+    - **导航与规划**
+      - [legbot_3D_Nav](07-projects/robot-nav-repositories/navigation/legbot-3d-nav.md)
+      - [legbot_Nav_system](07-projects/robot-nav-repositories/navigation/legbot-nav-system.md)
+      - [Bubble-Planner](07-projects/robot-nav-repositories/navigation/bubble-planner.md)
+      - [Lazy Theta*](07-projects/robot-nav-repositories/navigation/lazy-thetastar.md)
+      - [State Lattice Planner](07-projects/robot-nav-repositories/navigation/standalone-lattice.md)
+    - **控制与优化**
+      - [SA-MPPI](07-projects/robot-nav-repositories/control/sa-mppi.md)
+      - [legbot-MPC-WBC](07-projects/robot-nav-repositories/control/legbot-mpc-wbc.md)
+      - [Graceful Controller](07-projects/robot-nav-repositories/control/pp-controller.md)
+      - [Regulated Pure Pursuit](07-projects/robot-nav-repositories/control/rpp-controller.md)
+      - [Path-Tracking-Benchmarks](07-projects/robot-nav-repositories/control/path-tracking-benchmarks.md)
+      - [SA-MPPI Cost Calculator](07-projects/robot-nav-repositories/control/sa-mppi-cost-calculator.md)
+    - **强化学习与运动学习**
+      - [legbot_lab](07-projects/robot-nav-repositories/learning/legbot-lab.md)
+      - [GO2_backflip](07-projects/robot-nav-repositories/learning/go2-backflip.md)
+      - [RAV-TD3](07-projects/robot-nav-repositories/learning/rav-td3.md)
+      - [RPO_IsaacLab](07-projects/robot-nav-repositories/learning/rpo-isaaclab.md)
+      - [Panda_arm_PPO](07-projects/robot-nav-repositories/learning/panda-arm-ppo.md)
+      - [IL-dual-arm HDR-IL](07-projects/robot-nav-repositories/learning/il-dual-arm-hdr-il.md)
+    - **机械臂与移动操作**
+      - [manipulation_wheel](07-projects/robot-nav-repositories/manipulation/manipulation-wheel.md)
+      - [SuperMimic-Agent-WFArm](07-projects/robot-nav-repositories/manipulation/supermimic-agent-wfarm.md)
+      - [openarm-custom-stack](07-projects/robot-nav-repositories/manipulation/openarm-custom-stack.md)
+    - **感知与定位**
+      - [lidar_imu_camera_ws](07-projects/robot-nav-repositories/perception/lidar-imu-camera-ws.md)
+    - **视觉算法**
+      - [Deblurred_Image](07-projects/robot-nav-repositories/vision/deblurred-image.md)
 
 - **08 · 问题与解决方案**
   - [问题知识库首页](08-problems-and-solutions/README.md)
