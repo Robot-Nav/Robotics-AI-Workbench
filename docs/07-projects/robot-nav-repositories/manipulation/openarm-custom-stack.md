@@ -15,8 +15,10 @@ RGB-D 图像与 CameraInfo → 目标/箱体检测与位姿估计 → TF 与时�
 
 ArUco 检测先在灰度图像中提取 marker corners，再用相机内参矩阵和 marker 三维角点坐标执行 PnP 求解：
 
-$$s\begin{bmatrix}u\\v\\1\end{bmatrix}
-=K[R\mid t]\begin{bmatrix}X\\Y\\Z\\1\end{bmatrix}.$$
+$$
+s\begin{bmatrix}u\\v\\1\end{bmatrix}
+=K[R\mid t]\begin{bmatrix}X\\Y\\Z\\1\end{bmatrix}.
+$$
 
 得到的旋转、平移转换为四元数和 PoseStamped，并发布 TF。相机内参来自 CameraInfo；图像消息时间戳用于保证位姿与图像时刻一致。marker 的实际尺寸、字典类型、相机坐标系和外参必须标定正确，否则 PnP 只能给出数学上自洽但物理坐标错误的位姿。
 
@@ -68,7 +70,6 @@ mtc_pregrasp.cpp 对待执行的子轨迹检查空轨迹、控制器归属、末
 - [PlanningScene 管理](https://github.com/Robot-Nav/openarm-custom-stack/blob/main/src/openarm_mtc_pick/src/scene_manager.cpp)
 - [MTC 任务与执行](https://github.com/Robot-Nav/openarm-custom-stack/blob/main/src/openarm_mtc_pick/src/mtc_pregrasp.cpp)
 - [OpenArm 硬件集成](https://github.com/Robot-Nav/openarm-custom-stack/tree/main/integration)
-
 
 ---
 
