@@ -87,6 +87,11 @@
   - [每日记录模板](10-journal/daily-template.md)
   - [每周复盘模板](10-journal/weekly-template.md)
 
+- **工具箱**
+  - [工具箱总览](tools/README.md)
+  - [Offer 沟通助手使用说明](tools/offer-assistant/README.md)
+  - [打开 Offer 沟通助手](https://robot-nav.github.io/Robotics-AI-Workbench/tools/offer-assistant/)
+
 - **模板**
   - [技术笔记模板](templates/technical-note.md)
   - [问题记录模板](templates/problem.md)
