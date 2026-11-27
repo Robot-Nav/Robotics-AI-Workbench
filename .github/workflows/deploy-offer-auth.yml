@@ -1,4 +1,4 @@
-name: Deploy private Offer recording service
+name: Deploy auxiliary utility service
 
 on:
   push:
