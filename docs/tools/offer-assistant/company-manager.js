@@ -103,7 +103,7 @@
   });
   $("exportCompany").addEventListener("click", () => {
     const p = active();
-    download(snapshot([p]), "Offer档案_" + p.name.replace(/[\\/:*?""<>|]/g, "_") + ".json");
+    download(snapshot([p]), "Offer档案_" + p.name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5_-]/g, "_") + ".json");
   });
   $("backupCompanies").addEventListener("click", () => {
     download(snapshot(store.list()), "Offer全部公司档案备份_" + new Date().toISOString().slice(0, 10) + ".json");
