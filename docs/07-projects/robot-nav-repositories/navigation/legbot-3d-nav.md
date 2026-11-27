@@ -56,26 +56,26 @@ TomogramPlanner 会预计算每个栅格索引对应的物理 XY 坐标，并通
 
 FAST-LIO 的基本任务是估计 IMU 状态并将连续扫描点云变换到统一参考时刻。典型状态可写为：
 
-\[
+$$
 \mathbf{x} =
 \left[
 \mathbf{R},\mathbf{p},\mathbf{v},
 \mathbf{b}_g,\mathbf{b}_a,
 \mathbf{g}
 \right]
-\]
+$$
 
 其中 R、p、v 分别为姿态、位置和速度，bg、ba 为陀螺仪和加速度计偏置，g 为重力向量。IMU 高频传播提供短时运动预测，LiDAR 几何残差校正累计漂移。FAST-LIO 系列通过迭代误差状态 Kalman Filter 将点到局部地图的几何约束融入状态更新，并使用增量式空间索引维护局部点云地图。
 
 对点云中的点 p_i，去畸变时需要根据点采样时刻 t_i 的运动状态，将其变换到统一时刻 t_r：
 
-\[
+$$
 {}^{W}\mathbf{p}_{i}(t_r)
 =
 {}^{W}\mathbf{T}_{B}(t_r)^{-1}
 {}^{W}\mathbf{T}_{B}(t_i)
 {}^{B}\mathbf{p}_{i}
-\]
+$$
 
 这里的公式描述 FAST-LIO/IMU 去畸变的一般坐标变换关系；具体误差状态、观测雅可比和迭代更新应以仓库内 FAST-LIO 上游代码为准。
 
@@ -85,16 +85,16 @@ FAST-LIO 的基本任务是估计 IMU 状态并将连续扫描点云变换到统
 
 可将搜索节点抽象为：
 
-\[
+$$
 n=(i_x,i_y,l)
-\]
+$$
 
 其中 ix、iy 是平面栅格索引，l 是高度层索引。相邻层的 gateway 对应跨层边。全局搜索的通用形式为：
 
-\[
+$$
 J(\pi)=\sum_{(n_i,n_j)\in\pi}
 c(n_i,n_j)
-\]
+$$
 
 其中边代价 c 可由 traversability、几何可行性和跨层转移代价共同构成。仓库可读代码确认了分层高程、traversability、层选择和 gateway 构造；原生 OfflineElePlanner 的完整代价和搜索实现尚不能从当前源码直接复核。
 
@@ -110,27 +110,27 @@ SCAN 的局部规划分为初始化、碰撞修复、连续轨迹优化和可行
 
 A* 的基本代价为：
 
-\[
+$$
 f(n)=g(n)+h(n)
-\]
+$$
 
 其中 g(n) 是从起点到节点 n 的累计代价，h(n) 是到目标的启发式估计。源码提供对角、曼哈顿和欧氏启发式计算。A* 在这里主要负责提供离散可行引导，不直接替代最终连续轨迹。
 
 三次均匀 B-Spline 可写为：
 
-\[
+$$
 \mathbf{p}(u)=\sum_i \mathbf{P}_i B_{i,3}(u)
-\]
+$$
 
 P_i 为控制点，B_{i,3} 为三次基函数。轨迹连续性由基函数结构提供，控制点优化则在平滑、碰撞、可行性和参考路径贴合之间权衡。源码中优化权重从配置读取：
 
-\[
+$$
 J(\mathbf{P})=
 \lambda_s J_{\mathrm{smooth}}+
 \lambda_c J_{\mathrm{collision}}+
 \lambda_f J_{\mathrm{feasibility}}+
 \lambda_r J_{\mathrm{fitness}}
-\]
+$$
 
 这里是对代码中四类代价项的结构化概括；每项的具体离散表达式和梯度应以 BsplineOptimizer 对应函数为准。
 
@@ -142,9 +142,9 @@ SCANReplanFSM 使用 0.01 s 的执行定时器和 0.05 s 的安全检查定时�
 
 Go2 command adapter 不直接输出关节轨迹，而是从 B-Spline 中寻找最近时间 t_near，再前视 time_forward 得到：
 
-\[
+$$
 t_{\mathrm{look}}=\min(T,t_{\mathrm{near}}+T_f)
-\]
+$$
 
 并查询前视位置、速度和航向，再转换为速度指令。源码还包含起步速度、楼梯速度缩放、终点减速、旋转优先和到达确认等工程逻辑，避免低速死锁、越过终点后反向修正以及新目标规划期间继续执行旧轨迹。
 
