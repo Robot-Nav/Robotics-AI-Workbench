@@ -50,46 +50,60 @@ Softmax 权重：根据轨迹总代价计算样本权重
 ### 3.1 控制序列采样
 
 设预测时域包含 H 个离散时刻，控制序列为：
+
 $$
 \bar{\mathbf{u}}=
 [\bar{\mathbf{u}}_0,\ldots,\bar{\mathbf{u}}_{H-1}]
 $$
+
 第 k 条候选控制序列通过加入高斯噪声生成：
+
 $$
 \mathbf{u}_{k,t}=\bar{\mathbf{u}}_t+\boldsymbol{\epsilon}_{k,t},
 \qquad
 \boldsymbol{\epsilon}_{k,t}\sim\mathcal{N}(0,\Sigma)
 $$
+
 每条候选序列从当前状态开始进行前向 rollout：
+
 $$
 \mathbf{x}_{k,t+1}=f(\mathbf{x}_{k,t},\mathbf{u}_{k,t},\Delta t)
 $$
+
 对每条轨迹累计路径、目标、障碍、控制约束等代价：
+
 $$
 S_k=\sum_{t=0}^{H-1}c(\mathbf{x}_{k,t},\mathbf{u}_{k,t})+
 c_T(\mathbf{x}_{k,H})
 $$
+
 ### 3.2 重要性权重与控制更新
 
 实现中先减去最小代价以改善指数计算数值稳定性，再计算 softmax 权重：
+
 $$
 w_k=
 \frac{\exp[-(S_k-S_{\min})/T]}
 {\sum_j\exp[-(S_j-S_{\min})/T]}
 $$
+
 其中 T 是温度参数。最终控制序列按样本权重更新：
+
 $$
 \bar{\mathbf{u}}_t
 \leftarrow
 \sum_{k=1}^{K}w_k\mathbf{u}_{k,t}
 $$
+
 Optimizer 还会加入 MPPI 控制代价修正项。源码对 vx、wz 以及全向模型下的 vy 计算：
+
 $$
 \Delta S_k =
 \sum_t
 \frac{\gamma}{\sigma^2}
 \bar u_t(u_{k,t}-\bar u_t)
 $$
+
 这意味着更新并不是简单地对任意轨迹做无条件平均，而是同时考虑轨迹评分和控制噪声相对当前名义序列的代价修正。
 
 若启用 adaptive_temperature，代码根据候选代价范围调整 T，并限制在设定上下界内。use_mean_normalization 则改变指数权重的代价基准。
@@ -97,27 +111,37 @@ $$
 ### 3.3 运动模型与动态约束
 
 差速模型：
+
 $$
 \dot{x}=v_x\cos\theta,\quad
 \dot{y}=v_x\sin\theta,\quad
 \dot{\theta}=\omega_z
 $$
+
 全向模型额外允许横向速度：
+
 $$
 \dot{x}=v_x\cos\theta-v_y\sin\theta
 $$
+
 $$
+
 \dot{y}=v_x\sin\theta+v_y\cos\theta
 $$
+
 阿克曼模型在非全向模型基础上增加最小转弯半径约束：
+
 $$
 R=\left|\frac{v_x}{\omega_z}\right|\ge R_{\min}
 $$
+
 源码中的加速度约束使用离散限幅：
+
 $$
 v_{t+1}=v_t+
 \operatorname{clip}(v_t^{cmd}-v_t,-a_{\max}\Delta t,a_{\max}\Delta t)
 $$
+
 这使候选控制不会在一个模型步长内瞬间跳变到目标速度。
 
 ## 4. RC-ESDF：任意 footprint 的距离场
@@ -125,28 +149,35 @@ $$
 ### 4.1 距离场构造
 
 RcEsdfMap 以机器人中心为参考建立二维局部栅格。对每个栅格中心 p，计算其到多边形 footprint 各边线段的最小距离：
+
 $$
 d(p)=\min_i \operatorname{dist}(p,\overline{v_i v_{i+1}})
 $$
+
 若点在多边形内部，距离取负；外部取正。注意 rc_esdf.cpp 的实际赋值是外部保存正的 min_dist，注释中“外部为 0”的描述并不代表当前执行语句。
 
 query() 将世界/机器人中心坐标映射到栅格，取四个邻近单元进行双线性插值，并计算插值函数对 x、y 的数值梯度：
+
 $$
 d(x,y)\approx
 (1-\alpha)(1-\beta)d_{00}
 +\alpha(1-\beta)d_{10}
 +(1-\alpha)\beta d_{01}
 +\alpha\beta d_{11}
-$$$$
+$$
+
+$$
 \nabla d=
 \begin{bmatrix}
 \partial d/\partial x\\
 \partial d/\partial y
 \end{bmatrix}
 $$
+
 ### 4.2 轨迹姿态与障碍物坐标变换
 
 对候选轨迹在时刻 t 的机器人位姿 (x,y,θ)，将障碍点变换到机器人 body frame：
+
 $$
 \begin{bmatrix}x_b\\y_b\end{bmatrix}
 =
@@ -158,21 +189,28 @@ $$
 x_o-x\\y_o-y
 \end{bmatrix}
 $$
+
 再查询 footprint 的 signed distance。若距离低于 d_hard，则该轨迹被判定为碰撞，代价设为 collision_cost。
 
 在硬碰撞阈值和风险边界之间，源码采用指数惩罚：
+
 $$
 J_{\mathrm{risk}}=
 w\exp[-k(d-d_{\mathrm{hard}})]
 $$
+
 同时计算障碍物距离梯度与机器人速度的方向关系：
+
 $$
 a=
 -\frac{\mathbf{v}_{body}^{T}\nabla d}
 {\|\mathbf{v}_{body}\|\|\nabla d\|}
-$$$$
+$$
+
+$$
 m=\max(m_{\min},1-\eta a)
 $$
+
 最终将风险代价乘以 m。其效果是：候选轨迹若沿着使距离增大的方向运动，风险惩罚会减弱；若继续向障碍物靠近，惩罚会增强。该实现是**梯度调制轨迹代价**，从而间接改变 MPPI 的样本权重；不是直接把高斯采样分布的均值沿梯度平移。
 
 ### 4.3 动态障碍物
