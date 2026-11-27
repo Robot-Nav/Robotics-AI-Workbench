@@ -56,7 +56,11 @@ Robotics AI Workbench 不只是一个 Markdown 笔记仓库，而是一个围绕
 
 网站基于 Docsify 和 GitHub Pages 构建，支持目录导航、全文搜索、公式显示和代码复制。日常内容以 Markdown 维护，无需本地构建网站。
 
-### 快速编辑
+### 工具箱
+
+- **[Offer 沟通助手](https://robot-nav.github.io/Robotics-AI-Workbench/tools/offer-assistant/)**：校招 Offer 沟通清单、答复备注、录音与实时转写。
+
+## 快速编辑
 
 - **修改已有文章：** 在网站文章底部点击“在 GitHub 上编辑此页”，或直接在仓库的 `docs/` 目录中编辑对应 Markdown 文件。
 - **新增文章：** 在对应主题目录创建 Markdown 文件，并在 `docs/_sidebar.md` 中增加导航链接。
