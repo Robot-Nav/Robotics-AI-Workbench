@@ -43,24 +43,24 @@ MuJoCo Sim2Sim
 
 因此策略额外接收 episode time 的周期编码。设任务相位时间：
 
-\[
+$
 t_\phi=\min(t,2.0)
-\]
+$
 
-\[
+$
 \phi=\frac{\pi t_\phi}{2.0}
-\]
+$
 
 相位特征：
 
-\[
+$
 \mathbf{p}(t)=
 [
 \sin\phi,\cos\phi,
 \sin(\phi/2),\cos(\phi/2),
 \sin(\phi/4),\cos(\phi/4)
 ]
-\]
+$
 
 多频率 sin/cos 编码让 MLP 能够感知任务进度和不同时间尺度上的相位变化，同时避免直接输入一个不连续的周期边界值。
 
@@ -68,13 +68,13 @@ t_\phi=\min(t,2.0)
 
 当前 actor observation 为 60 维：
 
-\[
+$
 o_{\mathrm{actor}}=
 o_{\mathrm{sensor}}^{30}
 +a_t^{12}
 +a_{t-1}^{12}
 +p(t)^{6}
-\]
+$
 
 其中 sensor observation 30 维包括：
 - base angular velocity：3；
@@ -88,12 +88,12 @@ o_{\mathrm{sensor}}^{30}
 
 Critic observation 为 165 维：
 
-\[
+$
 o_{\mathrm{critic}}=
 o_{\mathrm{state}}^{64}
 +
 o_{\mathrm{dynamics}}^{101}
-\]
+$
 
 特权信息包括仿真真实状态和随机化动力学参数，例如质量、惯量、质心、摩擦、接触、动作/观测延迟、PD 增益和电机偏置。Actor 不使用这些部署时不可直接获得的信息，Critic 在训练时使用它们提高价值估计质量。
 
@@ -101,27 +101,27 @@ o_{\mathrm{dynamics}}^{101}
 
 Actor 和 Critic 分别使用不同输入：
 
-\[
+$
 a_t\sim\pi_\theta(a_t\mid o_{\mathrm{actor}})
-\]
+$
 
-\[
+$
 V_\phi=V_\phi(o_{\mathrm{critic}})
-\]
+$
 
 Actor 与 Critic 均为 ELU MLP，隐藏层为 [512,256,128]。策略采用对角高斯分布，训练阶段从分布采样动作，部署阶段输出动作均值。
 
 ### 4.1 PPO clipped objective
 
-\[
+$
 r_t(\theta)=
 \exp\left(
 \log\pi_\theta(a_t|o_t)
 -\log\pi_{\theta_{\mathrm{old}}}(a_t|o_t)
 \right)
-\]
+$
 
-\[
+$
 L^{CLIP}=
 \mathbb{E}_t\left[
 \min\left(
@@ -129,17 +129,17 @@ r_t\hat A_t,
 \operatorname{clip}(r_t,1-\epsilon,1+\epsilon)\hat A_t
 \right)
 \right]
-\]
+$
 
 GAE：
 
-\[
+$
 \delta_t=r_t+\gamma V(s_{t+1})(1-d_t)-V(s_t)
-\]
+$
 
-\[
+$
 \hat A_t=\delta_t+\gamma\lambda(1-d_t)\hat A_{t+1}
-\]
+$
 
 价值函数使用 clipped value loss，策略熵用于维持探索。学习率根据 KL divergence 与 desired_kl 自适应调整。
 
@@ -180,13 +180,13 @@ GAE：
 
 源码通过 pitch rate 积分维护 flip angle。代码对 pitch 角速度做限幅，并只在腾空且尚未着地、未发生头部接触时累计：
 
-\[
+$
 \theta_{\mathrm{flip},t+1}
 =
 \theta_{\mathrm{flip},t}
 +
 \operatorname{clip}(-\omega_y,-\omega_{\max},\omega_{\max})\Delta t
-\]
+$
 
 该积分量用于判断旋转进度。配置中 flip_completion_angle=5.50 rad，flip_success_angle=5.80 rad。它们是任务事件阈值，不代表单独满足角度就算成功。
 
@@ -211,16 +211,16 @@ success_hold_counter 还要求条件持续满足一段时间，避免单帧瞬�
 
 策略输出经过 action_clip，再映射为关节位置目标：
 
-\[
+$
 q^{des}=q_0+s_a a+\Delta q_{\mathrm{motor}}
-\]
+$
 
 PD 力矩：
 
-\[
+$
 \tau_{\mathrm{PD}}=
 K_p(q^{des}-q)-K_d\dot q
-\]
+$
 
 随后代码对动作延迟、目标变化速率、关节软位置范围、电机速度相关扭矩能力进行处理，最终限幅后的力矩才写入仿真执行器。
 
