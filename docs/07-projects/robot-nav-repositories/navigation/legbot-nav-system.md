@@ -51,12 +51,16 @@ terrainAnalysis 使用点云 voxel 表示地形，代码中包含扫描点降采
 
 pathFollower 接收局部 Path 和里程计，将机器人相对运动变换到路径发布时的参考坐标系，再沿路径前进，直到找到距离机器人超过 lookAheadDis 的前视点。由前视点相对方向计算路径方向角：
 
-$$\psi_{path}=\operatorname{atan2}(y_l,x_l),\qquad
-e_\psi=\operatorname{wrap}(\psi-\psi_{path}).$$
+$$
+\psi_{path}=\operatorname{atan2}(y_l,x_l),\qquad
+e_\psi=\operatorname{wrap}(\psi-\psi_{path}).
+$$
 
 角速度采用比例式航向反馈：
 
-$$\omega=-k_\psi e_\psi,$$
+$$
+\omega=-k_\psi e_\psi,
+$$
 
 并按 maxYawRate 限幅。机器人速度很低时使用 stopYawRateGain，运动中使用 yawRateGain。双向模式下，当方向误差超过约 90° 且满足切换时间条件时，可在前进/后退之间切换。接近路径终点时按 endDis/slowDwnDisThre 缩速，并可根据机身倾角或倾角速度触发减速/停车。
 
@@ -91,7 +95,6 @@ boundary_handler 从可通行区域边界文件、轨迹文件和关联数据读
 - [路径跟踪](https://github.com/Robot-Nav/legbot_Nav_system/blob/foxy-humble/src/base_autonomy/local_planner/src/pathFollower.cpp)
 - [地形分析](https://github.com/Robot-Nav/legbot_Nav_system/blob/foxy-humble/src/base_autonomy/terrain_analysis/src/terrainAnalysis.cpp)
 - [边界图提取](https://github.com/Robot-Nav/legbot_Nav_system/blob/foxy-humble/src/route_planner/boundary_handler/src/graph_extractor.cpp)
-
 
 ---
 
