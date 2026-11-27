@@ -17,6 +17,11 @@
 | 仿真与部署 | Isaac、MuJoCo、Gazebo、Sim2Real | [进入](06-simulation-validation/README.md) |
 | 项目实践 | 完整工程项目与可复现实验 | [进入](07-projects/README.md) |
 | 问题库 | 报错、故障、根因、解决方案 | [进入](08-problems-and-solutions/README.md) |
+| 工具箱 | 求职与研发效率工具 | [进入](tools/README.md) |
+
+## 工具箱
+
+- **[Offer 沟通助手](https://robot-nav.github.io/Robotics-AI-Workbench/tools/offer-assistant/)**：校招 Offer 问题清单、答复备注、录音与实时转写。
 
 ## 核心研发闭环
 
