@@ -24,7 +24,9 @@ RS16 指南特别要求点云包含逐点 timestamp 和 ring 信息，因此需�
 
 标定输出中的变换方向必须明确。例如若定义：
 
-$$p_I=R_{IL}p_L+t_{IL},$$
+$$
+p_I=R_{IL}p_L+t_{IL},
+$$
 
 则写入 FAST-LIO 配置时必须采用相同的 LiDAR→IMU 约定，不能把逆变换直接填入。
 
@@ -44,14 +46,20 @@ FAST-LIO2 以 IMU 高频传播为预测，以 LiDAR 点云 scan-to-map 配准为
 
 状态包括位置、姿态、速度、IMU bias、重力和 LiDAR-IMU 外参等。连续运动模型可写为：
 
-$$\dot p=v,\quad
-\dot R=R[\omega_m-b_g-n_g]_\times,$$
+$$
+\dot p=v,\quad
+\dot R=R[\omega_m-b_g-n_g]_\times,
+$$
 
-$$\dot v=R(a_m-b_a-n_a)+g.$$
+$$
+\dot v=R(a_m-b_a-n_a)+g.
+$$
 
 对每个点 $p_j$，根据其采样时刻与扫描参考时刻之间的相对位姿进行去畸变。完成坐标变换后，局部平面观测残差为：
 
-$$r_j=n_j^T p_j^W+d_j.$$
+$$
+r_j=n_j^T p_j^W+d_j.
+$$
 
 IEKF 根据残差与雅可比修正位姿、速度、bias 等状态。ikd-Tree 支持增量插入、删除和局部地图维护，避免每帧重新构建整张 KD 树。
 
@@ -108,7 +116,6 @@ D435i 标定指南将问题拆成三类：
 - [D435i IMU 与 RGB-IMU 标定指南](https://github.com/Robot-Nav/lidar_imu_camera_ws/blob/main/D435i中imu内参标定以及内置相机与imu内参优化联合标定指南.md)
 - [FAST-LIO2 源码](https://github.com/Robot-Nav/lidar_imu_camera_ws/tree/main/src/FAST_LIO)
 - [FAST-LIVO2 源码](https://github.com/Robot-Nav/lidar_imu_camera_ws/tree/main/src/FAST-LIVO2)
-
 
 ---
 

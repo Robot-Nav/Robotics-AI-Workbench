@@ -13,10 +13,15 @@ RPO_IsaacLab 是面向带臂双足机器人的 Isaac Lab / Isaac Sim 训练工�
 
 PPO 使用旧策略与新策略的概率比率：
 
-$$r_t(\theta)=\frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\rm old}}(a_t|s_t)},$$
+$$
+r_t(\theta)=\frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\rm old}}(a_t|s_t)},
+$$
 
-$$L^{clip}=\mathbb E_t\left[\min\left(r_t\hat A_t,
-\operatorname{clip}(r_t,1-\epsilon,1+\epsilon)\hat A_t\right)\right].$$
+$$
+L^{clip}=\mathbb E_t\left[\min\left(r_t\hat A_t,
+
+\operatorname{clip}(r_t,1-\epsilon,1+\epsilon)\hat A_t\right)\right].
+$$
 
 Critic 回归价值目标，GAE 用 $\gamma$ 与 $\lambda$ 平衡优势估计偏差和方差。RSL-RL 在并行环境中采集 rollout，再按 minibatch/epoch 更新 Actor-Critic。域随机化、课程学习、镜像对称损失和特权 Critic 属于训练配置增强，不是 PPO 本身定义的一部分。
 
@@ -26,10 +31,15 @@ AMP 将参考动作片段作为专家分布，判别器区分专家状态转移�
 
 可以将目标写为：
 
-$$r_t=r_t^{task}+\lambda_{\rm amp}r_t^{style},$$
+$$
+r_t=r_t^{task}+\lambda_{\rm amp}r_t^{style},
+$$
 
-$$L_D=\frac12\mathbb E_{x_E}[(D(x_E)-1)^2]
-+\frac12\mathbb E_{x_\pi}[(D(x_\pi)+1)^2].$$
+$$
+L_D=\frac12\mathbb E_{x_E}[(D(x_E)-1)^2]
+
++\frac12\mathbb E_{x_\pi}[(D(x_\pi)+1)^2].
+$$
 
 AMP 不是逐帧强制复现一条参考轨迹，而是学习参考动作分布中的运动风格；因此可在速度指令和任务目标约束下产生不同动作。项目包含平地 AMP、粗糙地形 AMP、LAFAN1 舞蹈 AMP 等任务。
 
@@ -37,10 +47,12 @@ AMP 不是逐帧强制复现一条参考轨迹，而是学习参考动作分布�
 
 BeyondMimic 与 AMP 的关键差别是：它为当前时刻提供参考动作帧，策略通过关节位置/速度等误差奖励跟踪该帧，并叠加任务奖励与扰动鲁棒性训练。可抽象为：
 
-$$r_{\rm track}=
+$$
+r_{\rm track}=
 w_p e^{-\|q-q^*\|^2/\sigma_p^2}
 +w_v e^{-\|\dot q-\dot q^*\|^2/\sigma_v^2}
-+w_b e^{-\|p_b-p_b^*\|^2/\sigma_b^2}.$$
++w_b e^{-\|p_b-p_b^*\|^2/\sigma_b^2}.
+$$
 
 项目另有 Getup-Mimic 起身模仿任务，参考动作重采样、初始位姿扰动和关节位置扰动需按具体配置理解。参考轨迹跟踪更直接，但对数据质量、相位对齐、重定向误差与参考动作覆盖范围更敏感。
 
@@ -85,7 +97,6 @@ Sim2Sim 入口包含 direct RL、AMP、BeyondMimic、Parkour 等不同脚本。O
 - [AMP: Adversarial Motion Priors](https://arxiv.org/abs/2104.02180)
 - [PPO](https://arxiv.org/abs/1707.06347)
 - [Isaac Lab 文档](https://isaac-sim.github.io/IsaacLab/)
-
 
 ---
 

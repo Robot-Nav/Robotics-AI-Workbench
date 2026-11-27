@@ -7,7 +7,9 @@
 
 图像去模糊通常从退化模型出发：
 
-$$y=k*x+n,$$
+$$
+y=k*x+n,
+$$
 
 其中 $x$ 为清晰图像，$k$ 为模糊核，$y$ 为观测模糊图像，$n$ 为噪声。运动模糊的核由曝光期间相机/物体运动轨迹决定；空间变化模糊可能需要更复杂的非均匀退化模型。
 
@@ -19,8 +21,10 @@ $$y=k*x+n,$$
 
 在泊松噪声模型下，RL 通过迭代最大化似然估计：
 
-$$x^{(k+1)}=x^{(k)}\odot
-\left[k^\star * \frac{y}{k*x^{(k)}+\epsilon}\right].$$
+$$
+x^{(k+1)}=x^{(k)}\odot
+\left[k^\star * \frac{y}{k*x^{(k)}+\epsilon}\right].
+$$
 
 其中 $k^\star$ 是模糊核的翻转形式。RL 不需要显式求解大规模线性系统，但迭代过多会放大噪声和振铃。效果高度依赖 PSF 是否接近真实模糊过程。
 
@@ -28,8 +32,10 @@ $$x^{(k+1)}=x^{(k)}\odot
 
 维纳滤波在频域中结合退化核与噪声功率谱：
 
-$$\hat X(u,v)=
-\frac{K^*(u,v)}{|K(u,v)|^2+K_n(u,v)/K_x(u,v)}Y(u,v).$$
+$$
+\hat X(u,v)=
+\frac{K^*(u,v)}{|K(u,v)|^2+K_n(u,v)/K_x(u,v)}Y(u,v).
+$$
 
 它在反卷积和噪声抑制之间折中。噪声参数 $K$ 或功率谱估计错误时，会出现过度平滑或残留模糊。
 
@@ -37,7 +43,9 @@ $$\hat X(u,v)=
 
 盲去卷积同时估计清晰图像和未知模糊核：
 
-$$\min_{x,k}\|k*x-y\|^2+\lambda_x\Phi(x)+\lambda_k\Psi(k).$$
+$$
+\min_{x,k}\|k*x-y\|^2+\lambda_x\Phi(x)+\lambda_k\Psi(k).
+$$
 
 这是非凸问题，需要对图像梯度、稀疏性或模糊核施加先验。仓库中传统方法脚本适合用于已知/近似 PSF 场景与算法原理对照。
 
@@ -47,7 +55,9 @@ DeblurGAN-v2 将去模糊建模为条件生成任务。生成器使用 FPN 进�
 
 生成器训练损失通常由对抗项与内容项组成：
 
-$$L_G=L_{\rm adv}+\lambda_cL_{\rm content}.$$
+$$
+L_G=L_{\rm adv}+\lambda_cL_{\rm content}.
+$$
 
 仓库实现支持感知损失：使用预训练 VGG 特征比较生成图像与清晰图像的高层特征，并结合像素 MSE/L1。判别器代码支持 WGAN-GP、LSGAN、GAN、RaGAN 等形式；具体实验必须以配置文件中的 disc_loss 为准。
 
@@ -65,8 +75,10 @@ RT-Focuser 的设计重点是轻量与多尺度特征融合。仓库模型包含
 
 MLIA 的抽象形式：
 
-$$F_{MLIA}=SE\left(Conv_{3\times3}
-\left[Proj(F_1)\Vert\cdots\Vert Proj(F_n)\right]\right).$$
+$$
+F_{MLIA}=SE\left(Conv_{3\times3}
+\left[Proj(F_1)\Vert\cdots\Vert Proj(F_n)\right]\right).
+$$
 
 它与普通 U-Net 逐层 skip connection 的区别在于：多个编码层级可以同时参与一个解码尺度的特征融合。模型还提供 SPPF 变体，以不同池化感受野增加上下文信息。
 
@@ -99,7 +111,6 @@ INT8 权重量化不代表所有激活也为 INT8；需要检查具体量化配�
 - [RT-Focuser 模型](https://github.com/Robot-Nav/Deblurred_Image/blob/main/深度学习/RT-Focuser-main/model/rt_focuser_model.py)
 - [RT-Focuser 技术文档](https://github.com/Robot-Nav/Deblurred_Image/blob/main/深度学习/RT-Focuser-main/RT文档.md)
 - [DeblurGAN-v2 模型与损失](https://github.com/Robot-Nav/Deblurred_Image/tree/main/深度学习/DeblurGANv2)
-
 
 ---
 

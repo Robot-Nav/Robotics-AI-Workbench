@@ -67,16 +67,25 @@
         window.__docsifyMathPending = true;
         return;
       }
-      mathJax.startup.promise.then(function () {
-        const app = document.getElementById('app');
-        if (!app) return;
-        mathJax.typesetClear([app]);
-        return mathJax.typesetPromise([app]);
-      }).catch(function (error) {
-        console.error('MathJax typesetting failed:', error);
-      });
+      window.__docsifyMathPending = false;
+      // MathJax 3 requires asynchronous typesetting calls to be serialized.
+      window.__docsifyMathTypesetPromise =
+        (window.__docsifyMathTypesetPromise || mathJax.startup.promise)
+          .then(function () {
+            const app = document.getElementById('app');
+            if (!app) return;
+            mathJax.typesetClear([app]);
+            return mathJax.typesetPromise([app]);
+          })
+          .catch(function (error) {
+            console.error('MathJax typesetting failed:', error);
+          });
     };
     window.MathJax = {
+      startup: {
+        // Docsify owns page rendering; typeset only after each page is inserted.
+        typeset: false
+      },
       tex: {
         inlineMath: [['$', '$'], ['\\(', '\\)']],
         displayMath: [['$$', '$$'], ['\\[', '\\]']]

@@ -20,14 +20,18 @@
 
 全身分支的原始状态为 57 维：
 
-$$s_t=[p_t,r_t,q_t,v_t,\omega_t,\dot q_t],$$
+$$
+s_t=[p_t,r_t,q_t,v_t,\omega_t,\dot q_t],
+$$
 
 其中位置 3 维、wxyz 四元数 4 维、关节位置 22 维、线速度 3 维、角速度 3 维、关节速度 22 维。动力学网络接收规范化后的 53 维特征，去掉全局平移和航向中的冗余表示。
 
 策略输出 22 维动作，按 12 路腿部位置目标、4 路轮速目标和 6 路机械臂位置目标排列：
 
-$$q_i^{target}=q_i^0+\sigma_i a_i,\qquad
-\dot q_j^{target}=\sigma_j a_j.$$
+$$
+q_i^{target}=q_i^0+\sigma_i a_i,\qquad
+\dot q_j^{target}=\sigma_j a_j.
+$$
 
 这是统一 Actor 的联合输出接口，但不自动证明底盘与机械臂已学会有效协同。需要通过底盘运动消融、机械臂冻结、姿态扰动和末端误差等实验验证。
 
@@ -37,18 +41,27 @@ $$q_i^{target}=q_i^0+\sigma_i a_i,\qquad
 
 世界模型学习仿真转移：
 
-$$\hat s_{t+1}=F_\theta(\hat s_t,a_t,\xi),$$
+$$
+\hat s_{t+1}=F_\theta(\hat s_t,a_t,\xi),
+$$
 
 其中 $\xi$ 可包含摩擦等上下文。实现采用残差预测与显式积分，避免网络从零预测整个状态。以平移为例：
 
-$$\hat v_{t+1}=\hat v_t+R_h\Delta v_\theta,$$
-$$\hat p_{t+1}=\hat p_t+\Delta t\hat v_{t+1}+R_h\Delta p_\theta.$$
+$$
+\hat v_{t+1}=\hat v_t+R_h\Delta v_\theta,
+$$
+
+$$
+\hat p_{t+1}=\hat p_t+\Delta t\hat v_{t+1}+R_h\Delta p_\theta.
+$$
 
 关节位置使用类似的速度积分与残差形式；姿态使用旋转增量更新并归一化。残差通过 tanh 和尺度限制，减少初始化时不合理的状态跳变。
 
 训练采用多步自回归预测，而不是每一步都把真实状态重新喂给模型：
 
-$$\hat s_{t+k+1}=F_\theta(\hat s_{t+k},a_{t+k},\xi).$$
+$$
+\hat s_{t+k+1}=F_\theta(\hat s_{t+k},a_{t+k},\xi).
+$$
 
 损失由归一化状态预测误差和失败预测 BCE 组成。多步训练暴露误差累积问题；但预测误差小不代表动作梯度一定正确，因此还需要对比真实仿真与模型对小动作扰动的响应。
 
@@ -56,7 +69,9 @@ $$\hat s_{t+k+1}=F_\theta(\hat s_{t+k},a_{t+k},\xi).$$
 
 全身分支将学习失败概率与解析失败概率组合：
 
-$$\hat d=1-(1-\hat d_{\rm learned})(1-\hat d_{\rm analytic}).$$
+$$
+\hat d=1-(1-\hat d_{\rm learned})(1-\hat d_{\rm analytic}).
+$$
 
 想象展开可据此降低失败状态继续传播的权重。解析安全代理提供平滑学习信号，真实 MuJoCo 接触和关节限位仍是最终评估依据。代理间隙不等于精确网格碰撞检测，不能替代真实碰撞检查。
 
@@ -64,16 +79,22 @@ $$\hat d=1-(1-\hat d_{\rm learned})(1-\hat d_{\rm analytic}).$$
 
 策略在模型中展开：
 
-$$a_t=\pi_\phi(o_t,g_t),\qquad
-\hat s_{t+1}=F_\theta(\hat s_t,a_t,\xi).$$
+$$
+a_t=\pi_\phi(o_t,g_t),\qquad
+\hat s_{t+1}=F_\theta(\hat s_t,a_t,\xi).
+$$
 
 短时域目标包含累计任务奖励、存活概率和终端价值：
 
-$$J(\phi)=\mathbb E\left[
+$$
+J(\phi)=\mathbb E\left[
 \sum_{t=0}^{H-1}\gamma^t C_t r_{t+1}
-+\gamma^H C_H V_\psi(\hat s_H,g_H,\xi)\right],$$
++\gamma^H C_H V_\psi(\hat s_H,g_H,\xi)\right],
+$$
 
-$$C_t=\prod_{j=1}^{t}(1-\hat d_j).$$
+$$
+C_t=\prod_{j=1}^{t}(1-\hat d_j).
+$$
 
 Actor 更新时冻结世界模型和 Critic 的参数，但保留状态/动作通过网络的梯度，因此可用 BPTT 将未来回报梯度传回当前动作。冻结参数与 detach 中间状态不是同一操作：后者会切断时间梯度链。
 
@@ -105,7 +126,6 @@ MimicAgent 前端根据任务描述与阶段计划生成轨迹程序，程序通
 - [MimicAgent 参考生成前端](https://github.com/Robot-Nav/SuperMimic-Agent-WFArm/tree/main/src/supermimic/mimicagent)
 - [SuperMimic 原论文](https://arxiv.org/abs/2610.28480)
 - [MimicAgent 原论文](https://arxiv.org/abs/2609.24145)
-
 
 ---
 

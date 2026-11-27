@@ -7,7 +7,9 @@
 
 项目面向 ROS Noetic + Gazebo 中的 LIMO 移动机器人导航。策略从激光雷达扇区和目标相对极坐标直接产生线速度、角速度，环境层负责仿真交互、奖励、碰撞终止和安全限幅。
 
-$$s_t=[d_1,\ldots,d_{36},\ \Delta\psi,\ d_g],\qquad a_t=[v_t,\omega_t].$$
+$$
+s_t=[d_1,\ldots,d_{36},\ \Delta\psi,\ d_g],\qquad a_t=[v_t,\omega_t].
+$$
 
 激光扫描降采样为 36 个扇区，目标输入为相对方位角和距离。策略输出中线速度经 sigmoid 映射至 $[0,v_{\max}]$，角速度经 tanh 映射至 $[-\omega_{\max},\omega_{\max}]$，因此当前 Actor 设计为只前进、可双向转向，不直接学习倒车。
 
@@ -17,10 +19,15 @@ $$s_t=[d_1,\ldots,d_{36},\ \Delta\psi,\ d_g],\qquad a_t=[v_t,\omega_t].$$
 
 TD3 用两个 Critic 抑制价值过估计，目标值取较小者：
 
-$$y=r+\gamma(1-d)\min_{i=1,2}Q_{\theta_i'}(s',\tilde a'),$$
+$$
+y=r+\gamma(1-d)\min_{i=1,2}Q_{\theta_i'}(s',\tilde a'),
+$$
 
-$$\tilde a'=\operatorname{clip}(\pi_{\phi'}(s')+\epsilon,a_{\min},a_{\max}),\quad
-\epsilon\sim\operatorname{clip}(\mathcal N(0,\sigma),-c,c).$$
+$$
+\tilde a'=\operatorname{clip}(\pi_{\phi'}(s')+\epsilon,a_{\min},a_{\max}),\quad
+
+\epsilon\sim\operatorname{clip}(\mathcal N(0,\sigma),-c,c).
+$$
 
 Critic 最小化 $L_Q=\sum_i\mathbb E[(Q_{\theta_i}(s,a)-y)^2]$；Actor 延迟更新，优化 $J_\pi=-\mathbb E[Q_{\theta_1}(s,\pi_\phi(s))]$；目标网络使用 Polyak 更新 $\theta'\leftarrow\tau\theta+(1-\tau)\theta'$。这三项是 TD3 的基础机制，项目在其上叠加双 Actor 投票、风险感知编码与回放机制。
 
@@ -28,8 +35,10 @@ Critic 最小化 $L_Q=\sum_i\mathbb E[(Q_{\theta_i}(s,a)-y)^2]$；Actor 延迟�
 
 每个雷达扇区先映射为嵌入 $e_i$，再叠加可学习注意力 logit 与距离风险偏置：
 
-$$\alpha_i=\operatorname{softmax}\left(W_a e_i+\frac{\beta}{d_i+0.05}\right),\qquad
-c=\sum_{i=1}^{36}\alpha_i e_i.$$
+$$
+\alpha_i=\operatorname{softmax}\left(W_a e_i+\frac{\beta}{d_i+0.05}\right),\qquad
+c=\sum_{i=1}^{36}\alpha_i e_i.
+$$
 
 近距离扇区即使尚未被网络充分学习，也会获得较强注意力。随后将上下文向量、目标 MLP 特征以及雷达最小值/均值/标准差拼接，再经融合层送入 Actor/Critic。其意义是把“哪个方向危险”显式引入特征提取，而不只是把 36 个数直接交给全连接网络。
 
@@ -39,13 +48,17 @@ c=\sum_{i=1}^{36}\alpha_i e_i.$$
 
 两个 Actor 对同一状态产生候选动作：
 
-$$a_A=\pi_A(s),\quad a_B=\pi_B(s),\quad
-Q_A=\min_j Q_j(s,a_A),\quad Q_B=\min_j Q_j(s,a_B).$$
+$$
+a_A=\pi_A(s),\quad a_B=\pi_B(s),\quad
+Q_A=\min_j Q_j(s,a_A),\quad Q_B=\min_j Q_j(s,a_B).
+$$
 
 按 Q 值 softmax 得到权重 $w_A,w_B$，再组合 $a_v=w_Aa_A+w_Ba_B$。训练中还对两 Actor 加入一致性正则，约束其输出不要过度分歧。碰撞风险升高时，推理端进一步向角速度绝对值较大的候选动作偏移：
 
-$$risk=\operatorname{clip}\frac{d_{\rm risk}-d_{\rm front}}{d_{\rm risk}-d_{\rm collision}},\qquad
-\omega=\omega_v+risk^2(\omega_{\rm strong}-\omega_v).$$
+$$
+risk=\operatorname{clip}\frac{d_{\rm risk}-d_{\rm front}}{d_{\rm risk}-d_{\rm collision}},\qquad
+\omega=\omega_v+risk^2(\omega_{\rm strong}-\omega_v).
+$$
 
 这属于项目的风险增强启发式，不是 TD3 标准更新。软投票能利用策略差异，但两个 Actor 若分别建议左右急转，线性平均可能削弱转向；风险修正和安全层需要联合验证。
 
@@ -53,7 +66,9 @@ $$risk=\operatorname{clip}\frac{d_{\rm risk}-d_{\rm front}}{d_{\rm risk}-d_{\rm 
 
 前方最近距离定义归一化风险，奖励项随风险变化：安全时鼓励目标推进和速度，近障时降低前进奖励、增加转向鼓励并惩罚危险直行和高速。总奖励可抽象为：
 
-$$r=\sum_i w_i(risk)r_i-\sum_j \lambda_j(risk)p_j.$$
+$$
+r=\sum_i w_i(risk)r_i-\sum_j \lambda_j(risk)p_j.
+$$
 
 项目 README 给出的代表项包括目标推进、速度、朝向对齐、安全间隙、转向、控制平滑、风险直行惩罚、风险高速惩罚等。奖励设计解决固定权重在开阔区和狭窄区难以兼顾的问题，但动态权重也可能引入奖励突变或局部最优，应画出各项随距离变化曲线并做消融。
 
@@ -61,7 +76,9 @@ $$r=\sum_i w_i(risk)r_i-\sum_j \lambda_j(risk)p_j.$$
 
 OU 噪声满足离散形式：
 
-$$n_{t+1}=n_t+\theta(\mu-n_t)\Delta t+\sigma_t\sqrt{\Delta t}\,\epsilon_t.$$
+$$
+n_{t+1}=n_t+\theta(\mu-n_t)\Delta t+\sigma_t\sqrt{\Delta t}\,\epsilon_t.
+$$
 
 其时间相关性适合连续速度控制；项目还设置噪声衰减。PER 使用 SumTree 保存优先级，按 $P(i)=p_i^\alpha/\sum_jp_j^\alpha$ 抽样，并以重要性权重 $(N P(i))^{-\beta}$ 修正偏差。优先级通常由 TD error 加小常数构成。代码按优先级区间分层采样，复杂度约 $O(B\log N)$。
 
@@ -97,7 +114,6 @@ $$n_{t+1}=n_t+\theta(\mu-n_t)\Delta t+\sigma_t\sqrt{\Delta t}\,\epsilon_t.$$
 - [TD3 原论文](https://arxiv.org/abs/1802.09477)
 - [Prioritized Experience Replay](https://arxiv.org/abs/1511.05952)
 - [模仿学习与强化学习基础](../../../03-physical-ai/robot-learning.md)
-
 
 ---
 

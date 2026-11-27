@@ -12,7 +12,11 @@
 
 ## 3. 搜索代价与启发式
 源码 child cost 归一化 $c=C/252$，原语长度转为栅格单位 $\ell$，一般移动代价
-$$g_e=\ell(r+w_c c^p),\quad p\in\{1,2\}.$$
+
+$$
+g_e=\ell(r+w_c c^p),\quad p\in\{1,2\}.
+$$
+
 转弯、左右切换、倒车分别乘以或添加惩罚因子；原地旋转独立计价。启发式取 $h=\max(h_{\rm obs},\min_{q\in G}h_{\rm dist}(n,q))$。取最大而不是相加可避免重复计算距离；只有各项都为下界且代价满足条件，才有 A* 最优性保证。retrospective_penalty、解析扩展、提前终止和离散化均可能改变保证。[getTraversalCost/getHeuristicCost](https://github.com/Robot-Nav/standalone_lattice_planner/blob/c6c665afeec5e0560d2b2bfadbcfb1813de9a2b2/src/state_space/node_lattice.cpp#L279-L345)。
 
 ## 4. 工程实现

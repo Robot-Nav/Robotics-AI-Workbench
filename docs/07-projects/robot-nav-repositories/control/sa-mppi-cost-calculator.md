@@ -30,7 +30,9 @@
 
 当 $d_{margin}<d<d_{inflation}$ 时：
 
-$$J_{obs}=w_{rep}\exp[-k(d-d_{margin})].$$
+$$
+J_{obs}=w_{rep}\exp[-k(d-d_{margin})].
+$$
 
 当 $d\le d_{margin}$ 时，工具采用固定大碰撞代价；超过 inflation 区域则不计排斥项。它表达的是软安全距离，不等同于几何碰撞检测。真实实现还要处理机器人 footprint、ESDF/距离场、障碍物有效性和采样时间。
 
@@ -46,9 +48,11 @@ ConstraintCritic 将线速度、角速度超限量按 $dt$ 累积。工具区分
 
 一般 MPPI 对第 $k$ 条控制扰动序列计算累计代价 $S_k$，再以指数权重形成更新：
 
-$$w_k=\frac{\exp[-(S_k-S_{\min})/\lambda]}
+$$
+w_k=\frac{\exp[-(S_k-S_{\min})/\lambda]}
 {\sum_j\exp[-(S_j-S_{\min})/\lambda]},\qquad
-u_t\leftarrow u_t+\sum_kw_k\epsilon_{k,t}.$$
+u_t\leftarrow u_t+\sum_kw_k\epsilon_{k,t}.
+$$
 
 Critic 负责构造 $S_k$；温度 $\lambda$ 控制权重分布尖锐程度。改变某个 critic 的系数不仅影响单项代价，也会改变不同 rollout 的相对排序和最终控制更新。因此调参时应观察各项 cost 分布与有效样本数，而不是只让某个 cost 数值“看起来大”。
 
@@ -74,7 +78,6 @@ Critic 负责构造 $S_k$；温度 $\lambda$ 控制权重分布尖锐程度。�
 - [公式说明](https://github.com/Robot-Nav/SA-MPPI-cost-calculator/blob/main/critic_cost_formulas.md)
 - [在线计算器源码](https://github.com/Robot-Nav/SA-MPPI-cost-calculator/blob/main/critic_cost_calculator.html)
 - [SA-MPPI 控制器分析](./sa-mppi.md)
-
 
 ---
 

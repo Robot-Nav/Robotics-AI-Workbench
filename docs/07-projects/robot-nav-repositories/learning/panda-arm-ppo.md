@@ -17,8 +17,10 @@
 
 策略概率比率为 $r_t(\theta)=\pi_\theta(a_t|s_t)/\pi_{\theta_{old}}(a_t|s_t)$，剪切目标：
 
-$$L^{clip}=\mathbb E_t\min\left(r_t\hat A_t,
-\operatorname{clip}(r_t,1-\epsilon,1+\epsilon)\hat A_t\right).$$
+$$
+L^{clip}=\mathbb E_t\min\left(r_t\hat A_t,
+\operatorname{clip}(r_t,1-\epsilon,1+\epsilon)\hat A_t\right).
+$$
 
 Critic 拟合回报，GAE 由 TD 残差累积得到优势，熵项鼓励探索。Stable-Baselines3 提供 PPO 算法实现，仓库主要工作集中在 MuJoCo 环境、状态/动作设计、奖励和训练配置。
 
@@ -26,11 +28,15 @@ Critic 拟合回报，GAE 由 TD 残差累积得到优势，熵项鼓励探索�
 
 7 关节状态与末端几何量组成 20 维观测：
 
-$$o=[q_{1:7},\dot q_{1:7},p_{ee},p_{goal}-p_{ee}].$$
+$$
+o=[q_{1:7},\dot q_{1:7},p_{ee},p_{goal}-p_{ee}].
+$$
 
 动作有两种模式。Delta 模式将归一化动作映射为关节增量并限幅：
 
-$$q^{cmd}=\operatorname{clip}(q+\alpha a,q_{\min},q_{\max});$$
+$$
+q^{cmd}=\operatorname{clip}(q+\alpha a,q_{\min},q_{\max});
+$$
 
 Absolute 模式将 $[-1,1]$ 线性映射到各关节范围。每次策略动作后，MuJoCo 执行若干物理子步，再重新计算末端状态和奖励。
 
@@ -87,7 +93,6 @@ ReachTargetEnv 通过最近 50 次成功记录更新课程等级；目标采样�
 - [奖励函数](https://github.com/Robot-Nav/Panda_arm_PPO/blob/main/src/envs/reward.py)
 - [PPO 配置](https://github.com/Robot-Nav/Panda_arm_PPO/blob/main/src/training/config.py)
 - [双臂避障环境](https://github.com/Robot-Nav/Panda_arm_PPO/blob/main/rl_dual_arm_obstacle.py)
-
 
 ---
 

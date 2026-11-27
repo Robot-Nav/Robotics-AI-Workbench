@@ -9,9 +9,17 @@
 
 ## 2. PP 几何与速度约束
 前视目标坐标 $(x_c,y_c)$，由圆弧几何得 $x_c^2+(y_c-R)^2=R^2$，所以
-$$\kappa=\frac{2y_c}{x_c^2+y_c^2},\quad \omega=v\kappa.$$
+
+$$
+\kappa=\frac{2y_c}{x_c^2+y_c^2},\quad \omega=v\kappa.
+$$
+
 速度相关前视距离 $L=\operatorname{clip}(|v|T_L,L_{\min},L_{\max})$。曲率半径 $R=1/|\kappa|$ 小于配置阈值时，源码将速度按 $R/R_{\min}$ 缩放。地图膨胀代价反推距离
-$$d=r_{\rm inscribed}+\frac{\ln253-\ln C}{k_{\rm inflation}}.$$
+
+$$
+d=r_{\rm inscribed}+\frac{\ln253-\ln C}{k_{\rm inflation}}.
+$$
+
 近障时按 $g d/d_{\rm scale}$ 缩速，取曲率和代价限制的较小值，再应用最小速度和近终点 regulation。此反算假设 costmap 采用相同指数膨胀模型，否则距离不可信。[regulation_functions.hpp](https://github.com/Robot-Nav/RPP_controller/blob/cc06b27b6449d095353b2bbe437d1a18d516ed7d/include/rpp_controller/regulation_functions.hpp)、[computeVelocityCommands](https://github.com/Robot-Nav/RPP_controller/blob/cc06b27b6449d095353b2bbe437d1a18d516ed7d/src/regulated_pure_pursuit_controller.cpp#L129-L291)。
 
 ## 3. 转向与安全

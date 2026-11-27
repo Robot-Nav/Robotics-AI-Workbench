@@ -9,9 +9,17 @@
 
 ## 2. 数学原理
 经典 PP 在车体坐标系的目标点 $(x_l,y_l)$ 给出 $\kappa=2y_l/(x_l^2+y_l^2)$，$\omega=v\kappa$，不显式考虑目标姿态。Graceful 使用相对距离 $r$ 与角误差 $\phi,\delta$；源码曲率计算包含
-$$P=k_\delta(\delta-\arctan(-k_\phi\phi)),\quad F=(1+k_\phi/(1+(k_\phi\phi)^2))\sin\delta.$$
+
+$$
+P=k_\delta(\delta-\arctan(-k_\phi\phi)),\quad F=(1+k_\phi/(1+(k_\phi\phi)^2))\sin\delta.
+$$
+
 曲率由上述反馈项除以距离并按源码坐标符号组合。应结合 EgoPolarCoords 的角定义阅读，不可互换目标航向与视线角。速度策略为
-$$v=\frac{v_{\max}}{1+\beta|\kappa|^\lambda},\quad \omega=\kappa v.$$
+
+$$
+v=\frac{v_{\max}}{1+\beta|\kappa|^\lambda},\quad \omega=\kappa v.
+$$
+
 接近目标再按 slowdown_radius 缩速，角速度饱和时回算线速度维持曲率，再施加速度上下界。距离接近零时返回零避免除零。[SmoothControlLaw](https://github.com/Robot-Nav/PP_Controller/blob/c6e31335feb5ce98c00f92e2859051ea8c0e5d31/graceful_controller_standalone.cpp#L87-L193)。
 
 ## 3. 工程实现与参数
