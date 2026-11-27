@@ -22,6 +22,7 @@
 
   function initialize() {
     removeNonPublicPanels();
+    document.body.style.visibility = "visible";
     const observer = new MutationObserver(removeNonPublicPanels);
     observer.observe(document.body, { childList: true, subtree: true });
   }
