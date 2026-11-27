@@ -175,7 +175,7 @@ audio{width:100%;margin-top:12px}.notice{font-size:12px;line-height:1.7;color:#6
 </script></body></html>`;
   return response(page.replace("__LOGIN__", login).replace("__NONCE__", nonce), 200, {
     "Content-Type": "text/html; charset=utf-8",
-    "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-" + nonce + "'; media-src blob:; img-src data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+    "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-" + nonce + "'; connect-src 'self' https:; media-src blob:; img-src data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
     "X-Frame-Options": "DENY"
   });
 }
