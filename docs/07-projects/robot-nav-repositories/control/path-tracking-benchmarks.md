@@ -9,12 +9,20 @@
 
 ## 2. 实际 MPC 与理论 MPC 的区别
 [mpc_controller.hpp](https://github.com/Robot-Nav/Path-Tracking-Benchmarks/blob/b045041fbced585a631cffd8ffc8f897ea2ed0a2/mpc_controller/include/mpc_controller/mpc_controller.hpp#L72-L156) 在当前速度加速度边界内枚举常值 $(v,\omega)$，对未来 N 步 rollout，选最小代价；不是逐时刻独立控制变量的标准 NMPC/QP。
-$$x_{k+1}=x_k+v\cos\theta_k\Delta t,\quad y_{k+1}=y_k+v\sin\theta_k\Delta t,\quad\theta_{k+1}=\theta_k+\omega\Delta t.$$
+
+$$
+x_{k+1}=x_k+v\cos\theta_k\Delta t,\quad y_{k+1}=y_k+v\sin\theta_k\Delta t,\quad\theta_{k+1}=\theta_k+\omega\Delta t.
+$$
+
 代价含随步数增大的权重 $1+0.3k$、位置误差平方、角误差及速度/角速度正则；最小转弯半径约束检查 $|\omega|\le v/R_{\min}$。若枚举 $K_vK_\omega$ 组合，计算量约 $O(K_vK_\omega N)$。可作为轻量 constant-control shooting baseline，论文中应明确区别。
 
 ## 3. LQR
 [lqr_controller.hpp](https://github.com/Robot-Nav/Path-Tracking-Benchmarks/blob/b045041fbced585a631cffd8ffc8f897ea2ed0a2/lqr_controller/include/lqr_controller/lqr_controller.hpp#L113-L197) 由前视参考、三点曲率和参考速度构造 $u_r=(v_r,v_r\kappa)$，线性化误差动力学 $e^+=Ae+B\Delta u$。DARE 为
-$$P=Q+A^TPA-A^TPB(R+B^TPB)^{-1}B^TPA.$$
+
+$$
+P=Q+A^TPA-A^TPB(R+B^TPB)^{-1}B^TPA.
+$$
+
 最优反馈 $\Delta u=-Ke$；源码将符号包含于 K_，实现 u=u_r+K_*e 后限幅。LQR 最优性仅在线性模型、二次代价和相应可稳定条件下成立，饱和后不能直接援引原结论。
 
 ## 4. 其他模块与对比
