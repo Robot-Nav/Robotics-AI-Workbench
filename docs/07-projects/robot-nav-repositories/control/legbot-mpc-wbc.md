@@ -41,48 +41,38 @@ MuJoCo 或真实机器人接口
 ### 3.1 状态和输入
 
 代码采用 12 维质心状态：
-
-$
+$$
 \mathbf{x}=
 [\mathbf{p}^{T},\boldsymbol{\Theta}^{T},
 \mathbf{v}^{T},\boldsymbol{\omega}^{T}]^{T}
 \in\mathbb{R}^{12}
-$
-
+$$
 其中 p 为质心位置，Θ 为 roll/pitch/yaw，v 为质心线速度，ω 为机身角速度。
 
 控制输入为四条腿各自的三维接触力：
-
-$
+$$
 \mathbf{u}=
 [\mathbf{f}_{FL}^{T},
 \mathbf{f}_{FR}^{T},
 \mathbf{f}_{RL}^{T},
 \mathbf{f}_{RR}^{T}]^{T}
 \in\mathbb{R}^{12}
-$
-
+$$
 ### 3.2 单刚体质心动力学
-
-$
+$$
 m\ddot{\mathbf{p}}
 =
 \sum_i\mathbf{f}_i+m\mathbf{g}
-$
-
-$
+$$$$
 \dot{\mathbf{L}}=
 \sum_i(\mathbf{r}_i\times\mathbf{f}_i)
-$
-
+$$
 其中 r_i 是质心到第 i 个足端接触点的力臂，L 是角动量。代码通过 Pinocchio 获取质心、足端位置、机身惯量和雅可比，并在 ComTraj 中构造线性化状态空间模型。
 
 在一个预测时域内可写成：
-
-$
+$$
 \mathbf{x}_{k+1}=A_k\mathbf{x}_k+B_k\mathbf{u}_k+\mathbf{c}_k
-$
-
+$$
 A、B 的具体数值随参考轨迹、质心惯量、接触点位置和离散步长更新。源码将动力学矩阵构造成稀疏结构，并预计算不随控制周期变化的部分。
 
 ## 4. 凸 MPC 的 QP 形式
@@ -90,59 +80,47 @@ A、B 的具体数值随参考轨迹、质心惯量、接触点位置和离散�
 ### 4.1 优化变量
 
 对预测步数 N，优化变量包括每步 12 维状态和 12 维接触力：
-
-$
+$$
 \mathbf{z}=
 [\mathbf{x}_0,\ldots,\mathbf{x}_{N-1},
 \mathbf{u}_0,\ldots,\mathbf{u}_{N-1}]
-$
-
+$$
 决策变量总数为 24N。代码中 NX=12、NU=12。
 
 ### 4.2 目标函数
 
 实现使用对角状态权重 Q 和输入权重 R：
-
-$
+$$
 J=
 \sum_{k=0}^{N-1}
 (\mathbf{x}_k-\mathbf{x}^{ref}_k)^TQ
 (\mathbf{x}_k-\mathbf{x}^{ref}_k)
 +
 \mathbf{u}_k^TR\mathbf{u}_k
-$
-
+$$
 当前源码权重为：
-
-$
+$$
 Q=\operatorname{diag}
 (1,1,50,10,20,1,2,2,1,1,1,1)
-$
-
-$
+$$$$
 R=\operatorname{diag}(10^{-5},\ldots,10^{-5})
-$
-
+$$
 Q 的较大姿态/高度相关权重体现了对机身姿态和高度跟踪的重视；R 较小表示接触力正则化相对弱。权重含义仍应结合状态变量顺序和实际实验调参验证，不能仅凭某个数字推断最终性能。
 
 ### 4.3 动力学等式约束
-
-$
+$$
 \mathbf{x}_{k+1}-A_k\mathbf{x}_k-B_k\mathbf{u}_k
 =\mathbf{c}_k
-$
-
+$$
 该组等式约束把未来状态与接触力关联起来，是 MPC 对预测动力学的显式表达。
 
 ### 4.4 摩擦锥线性化
 
 代码采用摩擦金字塔近似摩擦锥。对每条支撑腿，摩擦约束可表示为：
-
-$
+$$
 |f_x|\le\mu f_z,\qquad
 |f_y|\le\mu f_z
-$
-
+$$
 即四个线性不等式。当前代码 MU=0.8。与二阶锥约束相比，摩擦金字塔可保持 QP 结构，但其可行域是圆锥的多面体近似。
 
 接触相位还形成 box constraints：
@@ -169,19 +147,15 @@ CentroidalMPC 使用 CasADi 构建稀疏 QP，并调用 OSQP。源码把 Hessian
 ### 6.1 Trot 接触表
 
 Gait 默认对角步态相位偏置：
-
-$
+$$
 \phi=[0.5,0,0,0.5]
-$
-
+$$
 相位由时间和步态周期得到：
-
-$
+$$
 s_i(t)=
 \operatorname{mod}
 \left(\phi_i+\frac{t}{T},1\right)
-$
-
+$$
 若 s_i 小于 duty factor，则该腿处于 stance，否则为 swing。接触表被传入 MPC，用于把摆动腿的接触力固定为零。
 
 ### 6.2 Swing 足端轨迹
@@ -191,47 +165,37 @@ $
 ### 6.3 Swing Cartesian 控制
 
 LegController 先计算足端位置误差和速度误差，再构造操作空间惯量：
-
-$
+$$
 \Lambda=
 (JM^{-1}J^T)^{-1}
-$
-
+$$
 前馈项：
-
-$
+$$
 \mathbf{f}_{ff}
 =
 \Lambda(\ddot{\mathbf{p}}_d-\dot J\dot q)
-$
-
+$$
 笛卡尔 PD + 前馈：
-
-$
+$$
 \mathbf{F}=
 K_p(\mathbf{p}_d-\mathbf{p})
 +
 K_d(\dot{\mathbf{p}}_d-\dot{\mathbf{p}})
 +
 \mathbf{f}_{ff}
-$
-
+$$
 映射为关节力矩：
-
-$
+$$
 \boldsymbol{\tau}
 =
 J^T\mathbf{F}+C(q,\dot q)\dot q+g(q)
-$
-
+$$
 ### 6.4 Stance 力矩映射
 
 支撑相使用 MPC 输出的接触力：
-
-$
+$$
 \boldsymbol{\tau}=J^T(-\mathbf{f}_{contact})
-$
-
+$$
 源码对 stance 与 swing 采用不同控制逻辑，这是一种分相混合控制器，而不是一个统一的全身 QP 同时优化所有任务。
 
 ## 7. 关键源码索引
