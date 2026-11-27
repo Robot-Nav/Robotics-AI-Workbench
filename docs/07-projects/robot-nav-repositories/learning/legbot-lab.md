@@ -49,11 +49,11 @@ README 给出的单帧 onboard policy observation 为 57 维。配置项由以�
 
 PolicyCfg 设置 history_length=4，并展平历史维度：
 
-\[
+$$
 o_{\mathrm{on},t}=
 [o_t,o_{t-1},o_{t-2},o_{t-3}]
 \in\mathbb{R}^{228}
-\]
+$$
 
 历史观测有助于策略从连续观测中间接估计速度变化、接触状态和未直接测量的动态信息。
 
@@ -61,9 +61,9 @@ CriticCfg 则额外使用 base linear velocity、joint acceleration、joint torq
 
 ### 3.2 Action
 
-\[
+$$
 \mathbf{a}\in\mathbb{R}^{16}
-\]
+$$
 
 腿部关节位置目标按关节组 scale=0.25，并使用默认关节位置偏置；轮关节速度 scale=20。配置中轮速度动作 clip 为 [-150,150]，这是动作接口的限幅值，不等于电机最终实际速度上限。
 
@@ -85,27 +85,27 @@ CTS 的目标是在训练阶段利用仿真特权状态提高学习效率，同�
 
 教师编码器：
 
-\[
+$$
 z_t=f_\theta(o_{\mathrm{priv}})
-\]
+$$
 
 学生编码器：
 
-\[
+$$
 z_s=g_\phi(o_{\mathrm{on}})
-\]
+$$
 
 两者得到相同维数的 latent。共享 Actor 接收 latent 与当前单帧观测：
 
-\[
+$$
 a\sim\pi_\psi(a\mid z,o_{\mathrm{single}})
-\]
+$$
 
 共享 Critic 接收 latent 与 privileged observation：
 
-\[
+$$
 V_\omega=V_\omega(z,o_{\mathrm{priv}})
-\]
+$$
 
 当前配置中 teacher_env_ratio=0.75，即 2048 个环境中约 1536 个 teacher environments 和 512 个 student environments。教师和学生并发采样，但不是两套互不相关的完整策略；二者共享 Actor 和 Critic，latent 的来源不同。
 
@@ -113,15 +113,15 @@ V_\omega=V_\omega(z,o_{\mathrm{priv}})
 
 对新旧策略概率比：
 
-\[
+$$
 r_t(\psi)=
 \frac{\pi_\psi(a_t\mid s_t)}
 {\pi_{\psi_{\mathrm{old}}}(a_t\mid s_t)}
-\]
+$$
 
 剪切 surrogate objective：
 
-\[
+$$
 L^{CLIP}=
 \mathbb{E}_t
 \left[
@@ -130,17 +130,17 @@ r_t\hat A_t,
 \operatorname{clip}(r_t,1-\epsilon,1+\epsilon)\hat A_t
 \right)
 \right]
-\]
+$$
 
 GAE：
 
-\[
+$$
 \delta_t=r_t+\gamma V(s_{t+1})-V(s_t)
-\]
+$$
 
-\[
+$$
 \hat A_t=\delta_t+\gamma\lambda\hat A_{t+1}
-\]
+$$
 
 价值损失、熵正则和 PPO surrogate 共同更新 teacher encoder、Actor、Critic 与动作标准差。代码采用 clipped value loss，并依据 KL 与 desired_kl 自适应调整 PPO learning rate。
 
@@ -148,13 +148,13 @@ GAE：
 
 普通 CTS 学生编码器使用单一 MLP 将 onboard observation 映射到 latent。该仓库把学生编码器替换为 MoE：
 
-\[
+$$
 z_s=\sum_{i=1}^{N}w_i(o)e_i(o)
-\]
+$$
 
-\[
+$$
 w(o)=\operatorname{softmax}(g(o))
-\]
+$$
 
 其中 e_i 是第 i 个 expert，g 是 gating network。当前配置 expert_num=8、latent_dim=32。其动机是让不同专家有机会学习不同运动模式，例如轮式滚动、腿式支撑、越障和姿态恢复；但“每个专家已经形成某个明确语义专长”不能只凭结构推断，需要分析 gating 分布和专家激活结果。
 
@@ -162,32 +162,32 @@ w(o)=\operatorname{softmax}(g(o))
 
 学生 latent 通过教师 latent 监督：
 
-\[
+$$
 L_{\mathrm{latent}}=
 \|z_t-z_s\|_2^2
-\]
+$$
 
 为避免所有输入都集中到少数专家，代码计算 batch 内平均 gating usage：
 
-\[
+$$
 \bar w_i=\mathbb{E}_{o}[w_i(o)]
-\]
+$$
 
 并约束其接近均匀分布：
 
-\[
+$$
 L_{\mathrm{balance}}=
 \frac{1}{N}\sum_i
 \left(\bar w_i-\frac{1}{N}\right)^2
-\]
+$$
 
 总学生损失：
 
-\[
+$$
 L_{\mathrm{student}}=
 L_{\mathrm{latent}}+
 \alpha L_{\mathrm{balance}}
-\]
+$$
 
 其中 alpha 对应 load_balance_coef=0.01。实现中 teacher latent 在蒸馏阶段 detach/no_grad，学生 MoE 使用独立 optimizer 更新；这与 PPO 主 optimizer 分开，避免把学生编码器的蒸馏梯度混入 PPO 参数更新。
 
