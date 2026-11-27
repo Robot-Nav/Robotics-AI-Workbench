@@ -58,7 +58,7 @@ Robotics AI Workbench 不只是一个 Markdown 笔记仓库，而是一个围绕
 
 ### 工具箱
 
-- **[Offer 沟通助手](https://robot-nav.github.io/Robotics-AI-Workbench/tools/offer-assistant/)**：校招 Offer 沟通清单、答复备注、录音与实时转写。
+- **[Offer 沟通助手](https://robot-nav.github.io/Robotics-AI-Workbench/tools/offer-assistant/)**：校招 Offer 沟通问题清单、公司档案管理与答复备注。
 
 ## 快速编辑
 
