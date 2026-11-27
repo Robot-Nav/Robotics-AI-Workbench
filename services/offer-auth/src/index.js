@@ -84,7 +84,7 @@ function loginPage() {
   );
 }
 function recordingPage(login, nonce) {
-  const page = \`<!doctype html>
+  const page = `<!doctype html>
 <html lang="zh-CN"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10233f"><meta name="referrer" content="no-referrer">
@@ -172,7 +172,7 @@ audio{width:100%;margin-top:12px}.notice{font-size:12px;line-height:1.7;color:#6
  $("downloadText").addEventListener("click",()=>{const title=$("company").value||"Offer沟通";const content=title+"\\n"+new Date().toLocaleString()+"\\n\\n"+$("transcript").value;const url=URL.createObjectURL(new Blob(["\\ufeff",content],{type:"text/plain;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download="Offer转写_"+title.replace(/[^\\w\\u4e00-\\u9fa5-]/g,"_")+".txt";a.click();URL.revokeObjectURL(url);});
  window.addEventListener("beforeunload",()=>{if(recognition)try{recognition.stop();}catch(e){}if(recorder&&recorder.state!=="inactive")try{recorder.stop();}catch(e){}stopTracks();if(audioUrl)URL.revokeObjectURL(audioUrl);});
 })();
-</script></body></html>\`;
+</script></body></html>`;
   return response(page.replace("__LOGIN__", login).replace("__NONCE__", nonce), 200, {
     "Content-Type": "text/html; charset=utf-8",
     "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-" + nonce + "'; media-src blob:; img-src data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
