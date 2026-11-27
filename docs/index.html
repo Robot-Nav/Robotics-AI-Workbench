@@ -52,12 +52,29 @@
               '</div>';
           });
           hook.doneEach(function () {
-            if (window.MathJax && window.MathJax.typesetPromise) {
-              window.MathJax.typesetPromise();
+            if (window.renderDocsifyMath) {
+              window.renderDocsifyMath();
             }
           });
         }
       ]
+    };
+    // Docsify renders each page dynamically. Queue MathJax until its startup is
+    // complete, then typeset the current Docsify content after every navigation.
+    window.renderDocsifyMath = function () {
+      const mathJax = window.MathJax;
+      if (!mathJax || !mathJax.startup || !mathJax.startup.promise || !mathJax.typesetPromise) {
+        window.__docsifyMathPending = true;
+        return;
+      }
+      mathJax.startup.promise.then(function () {
+        const app = document.getElementById('app');
+        if (!app) return;
+        mathJax.typesetClear([app]);
+        return mathJax.typesetPromise([app]);
+      }).catch(function (error) {
+        console.error('MathJax typesetting failed:', error);
+      });
     };
     window.MathJax = {
       tex: {
@@ -74,6 +91,6 @@
   <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2/dist/docsify-pagination.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" onload="if (window.renderDocsifyMath) window.renderDocsifyMath()"></script>
 </body>
 </html>
