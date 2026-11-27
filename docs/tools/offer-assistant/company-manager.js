@@ -95,7 +95,7 @@
   $("deleteCompany").addEventListener("click", () => {
     const current = active();
     if (store.list().length <= 1) return;
-    if (!confirm("确定删除「" + current.name + "」档案吗？该公司的清单、答复备注和转写文字也会从此浏览器删除。请先导出备份。")) return;
+    if (!confirm("确定删除「" + current.name + "」档案吗？该公司的清单和答复备注也会从此浏览器删除。请先导出备份。")) return;
     const profiles = store.list().filter((p) => p.id !== current.id);
     store.scopedKeys.forEach((key) => store.rawRemove(current.id, key));
     store.saveList(profiles);
