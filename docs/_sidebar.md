@@ -89,8 +89,7 @@
 
 - **工具箱**
   - [工具箱总览](tools/README.md)
-  - [Offer 沟通助手使用说明](tools/offer-assistant/README.md)
-  - [打开 Offer 沟通助手](https://robot-nav.github.io/Robotics-AI-Workbench/tools/offer-assistant/)
+  - [Offer 沟通问题清单](https://robot-nav.github.io/Robotics-AI-Workbench/tools/offer-assistant/)
 
 - **模板**
   - [技术笔记模板](templates/technical-note.md)
